@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepOrangeTelegramBot", "DeepOrangeTelegramBot\DeepOrangeTelegramBot.csproj", "{9119A988-A675-4A61-97D5-7658907C11FE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9119A988-A675-4A61-97D5-7658907C11FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9119A988-A675-4A61-97D5-7658907C11FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9119A988-A675-4A61-97D5-7658907C11FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9119A988-A675-4A61-97D5-7658907C11FE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C306C8C8-2C2D-4228-B57D-5085FE9A3615}
+	EndGlobalSection
+EndGlobal
