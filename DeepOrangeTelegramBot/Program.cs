@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.DependencyInjection;
+using DeepOrangeTelegramBot.Bot.Implementation;
+using DeepOrangeTelegramBot.Bot.Interfaces;
+using DeepOrangeTelegramBot.Services.Implementation;
 
 namespace DeepOrangeTelegramBot
 {
@@ -11,6 +12,9 @@ namespace DeepOrangeTelegramBot
 
             builder.Services.AddControllers()
                             .AddNewtonsoftJson();
+
+            builder.Services.AddSingleton<UpdateDistributor<CommandExecutor>>()
+                            .AddSingleton<ITelegramBot, DeepOrangeBot>();
 
             var app = builder.Build();
 

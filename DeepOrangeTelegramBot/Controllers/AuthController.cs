@@ -1,9 +1,6 @@
 ﻿using DeepOrangeTelegramBot.Bot;
 using IdentityModel.Client;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 
 namespace DeepOrangeTelegramBot.Controllers
 {
@@ -12,7 +9,6 @@ namespace DeepOrangeTelegramBot.Controllers
     public class AuthController : Controller
     {
         private HttpClient _client = Client.GetHttpClient();
-        private static string _token;
 
         [HttpGet]
         public async Task<IActionResult> Auth(string code)
@@ -34,7 +30,7 @@ namespace DeepOrangeTelegramBot.Controllers
             var response = await client.RequestAuthorizationCodeTokenAsync(request);
 
             var accessToken = response.AccessToken;
-            _token = response.IdentityToken;
+            var identityTokenn = response.IdentityToken;
 
             _client.SetBearerToken(accessToken);
 
@@ -46,7 +42,6 @@ namespace DeepOrangeTelegramBot.Controllers
 
             var responseUserInfo = await client.GetUserInfoAsync(requestUserInfo);
             var userInfoContent = responseUserInfo.Claims;
-            BotController.UserClaims = userInfoContent;
 
             return Redirect($"tg://resolve?domain=DeepOrange_bot");
         }
@@ -55,7 +50,7 @@ namespace DeepOrangeTelegramBot.Controllers
         public async Task Logout()
         {
             var url = "https://localhost:7004/logout" +
-                      "?logoutId=" + _token +
+                      "?logoutId=" + "" +
                       "&post_logout_redirect_uri=" + "tg://resolve?domain=DeepOrange_bot";
 
             var response = await _client.GetAsync(url);
