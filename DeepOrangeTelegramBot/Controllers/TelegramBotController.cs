@@ -8,9 +8,9 @@ namespace DeepOrangeTelegramBot.Controllers
     [Route("/")]
     public class TelegramBotController : ControllerBase
     {
-        private readonly UpdateDistributor<CommandExecutor> _updateDistributor;
+        private readonly UpdateDistributor _updateDistributor;
 
-        public TelegramBotController(UpdateDistributor<CommandExecutor> updateDistributor)
+        public TelegramBotController(UpdateDistributor updateDistributor)
         {
             _updateDistributor = updateDistributor;
         }

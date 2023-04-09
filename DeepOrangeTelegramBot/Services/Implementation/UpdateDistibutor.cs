@@ -5,15 +5,18 @@ using Telegram.Bot.Types;
 
 namespace DeepOrangeTelegramBot.Services.Implementation;
 
-public class UpdateDistributor<T> where T : ITelegramUpdateListener, new()
+public class UpdateDistributor
 {
-    private readonly Dictionary<long, T> listeners;
-    private readonly TelegramBotClient telegramClient;
+    private readonly Dictionary<long, CommandExecutor> listeners;
 
-    public UpdateDistributor(ITelegramBot telegramBot)
+    private readonly ITelegramBot _telegramBot;
+    private readonly OIdcService _oIdcService;
+
+    public UpdateDistributor(ITelegramBot telegramBot, OIdcService oIdcService)
     {
-        listeners = new Dictionary<long, T>();
-        telegramClient = telegramBot.Client;
+        listeners = new Dictionary<long, CommandExecutor>();
+        _telegramBot = telegramBot;
+        _oIdcService = oIdcService;
     }
 
     public async Task GetUpdateAsync(Update update)
@@ -21,13 +24,10 @@ public class UpdateDistributor<T> where T : ITelegramUpdateListener, new()
         if (update.Message is not null)
         {
             long chatId = update.Message.Chat.Id;
-            T? listener = listeners.GetValueOrDefault(chatId);
+            var listener = listeners.GetValueOrDefault(chatId);
             if (listener is null)
             {
-                listener = new T
-                {
-                    Client = telegramClient
-                };
+                listener = new CommandExecutor(_telegramBot, _oIdcService);
                 listeners.Add(chatId, listener);
                 await listener.GetUpdateAsync(update);
                 return;

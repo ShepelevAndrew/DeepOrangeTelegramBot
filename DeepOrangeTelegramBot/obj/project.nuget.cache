@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xhHFtQnuhn9+cJjUcY1VHzW8Mh7nqCigkAyaYS9jeHT4FLEbPG0/p7J1OzLpblT0ywHZlY0qwLoNQhpvEoMUVQ==",
+  "dgSpecHash": "xXZWTnuUNgFtNU8qJP0JxLMh8VhiBtAPjbQsv9Z2LTT3VVkyKiNxeSAyBoGon+L2PwXXaVI7rF7e7x7RUBcwOw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\computer\\Desktop\\DeepOrangeTelegramBot\\DeepOrangeTelegramBot\\DeepOrangeTelegramBot.csproj",
+  "projectFilePath": "Q:\\GitHub\\DeepOrangeTelegramBot\\DeepOrangeTelegramBot\\DeepOrangeTelegramBot.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\computer\\.nuget\\packages\\identitymodel\\6.0.0\\identitymodel.6.0.0.nupkg.sha512",
     "C:\\Users\\computer\\.nuget\\packages\\microsoft.aspnetcore.authentication.openidconnect\\7.0.4\\microsoft.aspnetcore.authentication.openidconnect.7.0.4.nupkg.sha512",

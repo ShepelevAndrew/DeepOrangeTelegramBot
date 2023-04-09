@@ -1,4 +1,6 @@
-﻿using DeepOrangeTelegramBot.Commands.Interfaces;
+﻿using DeepOrangeTelegramBot.Bot.Interfaces;
+using DeepOrangeTelegramBot.Commands.Implementaion;
+using DeepOrangeTelegramBot.Commands.Interfaces;
 using DeepOrangeTelegramBot.Services.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -8,11 +10,21 @@ public class CommandExecutor : ITelegramUpdateListener
 {
     private readonly List<ICommand> commands;
     private IListener? listener = null;
-    public TelegramBotClient? Client { get; init; }
 
-    public CommandExecutor()
+    private readonly OIdcService _oIdcService;
+
+    public CommandExecutor(ITelegramBot client, OIdcService oIdcService)
     {
-        commands = GetCommands();
+        _oIdcService = oIdcService;
+        
+        commands = new List<ICommand>()
+        {
+            new StartCommand(client),
+            new RegisterCommand(this),
+            new CreateInviteLinkCommand(client),
+            new SendAuthLinkCommand(client, _oIdcService),
+            new GetEmployeeCommand(client, _oIdcService)
+        };
     }
 
     public async Task GetUpdateAsync(Update update)
@@ -36,11 +48,8 @@ public class CommandExecutor : ITelegramUpdateListener
             {
                 if (command.Name == msg.Text)
                 {
-                    if (Client is not null)
-                    {
-                        command.Client = Client;
-                        await command.Execute(update);
-                    }
+                    await command.Execute(update);
+                    break;
                 }
             }
         }

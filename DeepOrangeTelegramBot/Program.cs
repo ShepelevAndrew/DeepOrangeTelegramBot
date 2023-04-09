@@ -1,6 +1,8 @@
 using DeepOrangeTelegramBot.Bot.Implementation;
 using DeepOrangeTelegramBot.Bot.Interfaces;
 using DeepOrangeTelegramBot.Services.Implementation;
+using DeepOrangeTelegramBot.Services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DeepOrangeTelegramBot
 {
@@ -13,8 +15,15 @@ namespace DeepOrangeTelegramBot
             builder.Services.AddControllers()
                             .AddNewtonsoftJson();
 
-            builder.Services.AddSingleton<UpdateDistributor<CommandExecutor>>()
-                            .AddSingleton<ITelegramBot, DeepOrangeBot>();
+            builder.Services.AddHttpClient();
+
+            builder.Services.AddSingleton<UpdateDistributor>()
+                            .AddSingleton<ITelegramBot, DeepOrangeBot>()
+                            .AddSingleton<OIdcService>()
+                            .AddSingleton<IAuthService, AuthService>()
+                            .AddSingleton<UserTrackerStorage>()
+                            .AddSingleton<TokenStorage>()
+                            .AddSingleton<IMemoryCache, MemoryCache>();
 
             var app = builder.Build();
 

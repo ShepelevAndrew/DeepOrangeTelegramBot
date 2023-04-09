@@ -1,22 +1,27 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot;
-using DeepOrangeTelegramBot.Bot;
 using DeepOrangeTelegramBot.Commands.Interfaces;
+using DeepOrangeTelegramBot.Bot.Interfaces;
 
 namespace DeepOrangeTelegramBot.Commands.Implementaion;
 
 public class StartCommand : ICommand
 {
-    public TelegramBotClient? Client { get; set; }
-
     public string Name => "/start";
+
+    private readonly TelegramBotClient _telegramBot;
+
+    public StartCommand(ITelegramBot telegramBot)
+    {
+        _telegramBot = telegramBot.Client;
+    }
 
     public async Task Execute(Update update)
     {
-        if (Client is null || update.Message is null)
+        if (update.Message is null)
             return;
 
         long chatId = update.Message.Chat.Id;
-        await Client.SendTextMessageAsync(chatId, "Привет!");
+        await _telegramBot.SendTextMessageAsync(chatId, "Привет!");
     }
 }

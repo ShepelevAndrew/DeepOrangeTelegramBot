@@ -5,6 +5,5 @@ namespace DeepOrangeTelegramBot.Services.Interfaces;
 
 public interface ITelegramUpdateListener
 {
-    TelegramBotClient Client { get; init; }
     Task GetUpdateAsync(Update update);
 }

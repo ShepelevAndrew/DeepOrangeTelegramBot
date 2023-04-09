@@ -1,5 +1,5 @@
 ﻿using DeepOrangeTelegramBot.Bot;
-using IdentityModel.Client;
+using DeepOrangeTelegramBot.Services.Implementation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeepOrangeTelegramBot.Controllers
@@ -8,61 +8,31 @@ namespace DeepOrangeTelegramBot.Controllers
     [Route("/[action]")]
     public class AuthController : Controller
     {
-        private HttpClient _client = Client.GetHttpClient();
+        private readonly OIdcService _oIdcService;
+
+        public AuthController(OIdcService oIdcService)
+        {
+            _oIdcService = oIdcService;
+        }
 
         [HttpGet]
-        public async Task<IActionResult> Auth(string code)
+        public async Task<IActionResult> Auth(string code, string state)
         {
-            var client = new HttpClient();
-
-            var discover = await client.GetDiscoveryDocumentAsync("https://localhost:7004");
-
-            var request = new AuthorizationCodeTokenRequest
+            var userInfo = await _oIdcService.CompleteAuthAsync(state, code);
+            
+            if(userInfo == null)
             {
-                Address = discover.TokenEndpoint,
-                ClientId = "deep-orange-id",
-                ClientSecret = "deep_secret",
-                GrantType = "authorization_code",
-                RedirectUri = "http://localhost:5000/auth",
-                Code = code
-            };
-
-            var response = await client.RequestAuthorizationCodeTokenAsync(request);
-
-            var accessToken = response.AccessToken;
-            var identityTokenn = response.IdentityToken;
-
-            _client.SetBearerToken(accessToken);
-
-            var requestUserInfo = new UserInfoRequest
-            {
-                Address = discover.UserInfoEndpoint,
-                Token = accessToken
-            };
-
-            var responseUserInfo = await client.GetUserInfoAsync(requestUserInfo);
-            var userInfoContent = responseUserInfo.Claims;
-
-            return Redirect($"tg://resolve?domain=DeepOrange_bot");
+                return NotFound();
+            }
+            
+            /*tg://resolve?domain=DeepOrange_bot*/
+            return Redirect($"https://t.me/DeepOrange_bot");
         }
 
         [HttpGet]
         public async Task Logout()
         {
-            var url = "https://localhost:7004/logout" +
-                      "?logoutId=" + "" +
-                      "&post_logout_redirect_uri=" + "tg://resolve?domain=DeepOrange_bot";
-
-            var response = await _client.GetAsync(url);
-
-            if (response.IsSuccessStatusCode)
-            {
-                // Logout successful
-            }
-            else
-            {
-                // Logout failed
-            }
+            
         }
     }
 }
