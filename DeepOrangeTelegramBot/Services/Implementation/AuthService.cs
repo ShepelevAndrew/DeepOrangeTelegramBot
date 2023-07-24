@@ -25,6 +25,17 @@ public class AuthService : IAuthService
         return response;
     }
 
+    public async Task<HttpResponseMessage> PostRequestAsync(TokenResponse token, string requestUri, HttpContent content)
+    {
+        var client = _httpClientFactory.CreateClient("GetRequest");
+
+        client.SetBearerToken(token.AccessToken);
+
+        var response = await client.PostAsync(requestUri, content);
+
+        return response;
+    }
+
     public async Task<UserInfo> GetUserInfoAsync(TokenResponse token)
     {
         var client = _httpClientFactory.CreateClient("UserInfo");

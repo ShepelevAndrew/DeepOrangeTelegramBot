@@ -7,8 +7,6 @@ namespace DeepOrangeTelegramBot.Commands.Implementaion;
 
 public class RegisterCommand : ICommand, IListener
 {
-    public TelegramBotClient? Client { get; set; }
-
     public string Name => "/register";
     public bool IsFinished { get; set; } = false;
 
@@ -22,38 +20,38 @@ public class RegisterCommand : ICommand, IListener
     private string? phone = null;
     private string? name = null;
 
-    public async Task Execute(Update update)
+    public async Task Execute(Update update, TelegramBotClient client)
     {
-        if (Client is null || update.Message is null)
+        if (update.Message is null)
             return;
 
         long chatId = update.Message.Chat.Id;
 
         if(IsFinished)
         {
-            await Client.SendTextMessageAsync(chatId, "Ви зареєстровані!");
+            await client.SendTextMessageAsync(chatId, "Ви зареєстровані!");
             return;
         }
 
         Executor.StartListen(this);
-        await Client.SendTextMessageAsync(chatId, "Напишіть свій номер!");
+        await client.SendTextMessageAsync(chatId, "Напишіть свій номер!");
 
     }
 
-    public async Task GetUpdate(Update update)
+    public async Task GetUpdate(Update update, TelegramBotClient client)
     {
-        if(Client is null || update.Message is null) 
+        if(update.Message is null) 
             return;
 
         long chatId = update.Message.Chat.Id;
 
         if (phone == null) {
             phone = update.Message.Text;
-            await Client.SendTextMessageAsync(chatId, "Напишіть своє ім'я!");
+            await client.SendTextMessageAsync(chatId, "Напишіть своє ім'я!");
         } 
         else {
             name = update.Message.Text;
-            await Client.SendTextMessageAsync(chatId, "Вітаю ви зареєструвались!");
+            await client.SendTextMessageAsync(chatId, "Вітаю ви зареєструвались!");
 
             IsFinished = true;
             Executor.StopListen();

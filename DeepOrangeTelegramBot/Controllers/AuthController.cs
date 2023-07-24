@@ -26,7 +26,7 @@ namespace DeepOrangeTelegramBot.Controllers
             }
             
             /*tg://resolve?domain=DeepOrange_bot*/
-            return Redirect($"https://t.me/DeepOrange_bot");
+            return Redirect($"https://t.me/DeepOrange_bot?start=auth");
         }
 
         [HttpGet]

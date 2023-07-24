@@ -7,5 +7,5 @@ public interface ICommand
 {
     string Name { get; }
 
-    Task Execute(Update update);
+    Task Execute(Update update, TelegramBotClient telegramBot);
 }

@@ -1,4 +1,5 @@
-﻿using DeepOrangeTelegramBot.Bot.Interfaces;
+﻿using DeepOrangeTelegramBot.Bot;
+using DeepOrangeTelegramBot.Bot.Interfaces;
 using DeepOrangeTelegramBot.Commands.Interfaces;
 using DeepOrangeTelegramBot.Services.Implementation;
 using Telegram.Bot;
@@ -9,18 +10,16 @@ namespace DeepOrangeTelegramBot.Commands.Implementaion;
 
 public class SendAuthLinkCommand : ICommand
 {
-    public string Name => "/auth";
+    public string Name => "/auth /auth@DeepOrange_bot /start -pauth";
 
-    private readonly TelegramBotClient _telegramBot;
     private readonly OIdcService _oIdcService;
 
-    public SendAuthLinkCommand(ITelegramBot telegramBot, OIdcService oIdcService)
+    public SendAuthLinkCommand(OIdcService oIdcService)
     {
-        _telegramBot = telegramBot.Client;
         _oIdcService = oIdcService;
     }
 
-    public async Task Execute(Update update)
+    public async Task Execute(Update update, TelegramBotClient client)
     {
         if (update.Message is null || update.Message.From is null)
             return;
@@ -31,29 +30,29 @@ public class SendAuthLinkCommand : ICommand
         var userInfo = await _oIdcService.FindUserInfoAsync(userId);
 
         if (userInfo is not null)
-            await GreetAsync(userInfo, chatId);
+            await GreetAsync(userInfo, chatId, client);
         else
-            await AskForLoginAsync(userId, chatId);
+            await AskForLoginAsync(userId, chatId, client);
     }
 
-    private async Task GreetAsync(UserInfo userInfo, long chatId)
+    private async Task GreetAsync(UserInfo userInfo, long chatId, TelegramBotClient client)
     {
         var username = userInfo.PreferredUsername;
         var message = $"Hello, <b>{username}</b>!\nYou are the best! Have a nice day!";
 
-        await _telegramBot.SendTextMessageAsync(
+        await client.SendTextMessageAsync(
             chatId: chatId,
             text: message,
             parseMode: ParseMode.Html
         );
     }
 
-    private async Task AskForLoginAsync(long userId, long chatId)
+    private async Task AskForLoginAsync(long userId, long chatId, TelegramBotClient client)
     {
         var url = _oIdcService.GetAuthUrl(userId);
-        var message = $"Будь ласка авторизуйтесь: <a href=\"{url}\">увіти</a>";
+        var message = $"Будь ласка авторизуйтесь: <a href=\"{url}\">увійти</a>";
 
-        await _telegramBot.SendTextMessageAsync(
+        await client.SendTextMessageAsync(
             chatId: chatId,
             text: message,
             parseMode: ParseMode.Html

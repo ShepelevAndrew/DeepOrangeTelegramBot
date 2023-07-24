@@ -1,6 +1,5 @@
 ﻿using DeepOrangeTelegramBot.Bot.Interfaces;
 using DeepOrangeTelegramBot.Commands.Interfaces;
-using DeepOrangeTelegramBot.Services.Implementation;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -12,21 +11,14 @@ public class CreateInviteLinkCommand : ICommand
 
     private const long deepOrangeChateId = -1001904708878;
 
-    private readonly TelegramBotClient _telegramBot;
-
-    public CreateInviteLinkCommand(ITelegramBot telegramBot)
-    {
-        _telegramBot = telegramBot.Client;
-    }
-
-    public async Task Execute(Update update)
+    public async Task Execute(Update update, TelegramBotClient client)
     {
         if (update.Message is null)
             return;
 
         var chatId = update.Message.Chat.Id;
 
-        var inviteLink = await _telegramBot.CreateChatInviteLinkAsync(
+        var inviteLink = await client.CreateChatInviteLinkAsync(
                                             chatId: deepOrangeChateId,
                                             name: "privateChatLink",
                                             expireDate: DateTime.Now.AddDays(1),
@@ -34,7 +26,7 @@ public class CreateInviteLinkCommand : ICommand
                                             createsJoinRequest: false
                                             );
 
-        await _telegramBot.SendTextMessageAsync(
+        await client.SendTextMessageAsync(
                 chatId: chatId,
                 text: inviteLink.InviteLink
                 );

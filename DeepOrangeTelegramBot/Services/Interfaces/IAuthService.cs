@@ -9,4 +9,5 @@ public interface IAuthService
     Task<UserInfo> GetUserInfoAsync(TokenResponse token);
     Task<TokenResponse> GetTokenResponseAsync(string code);
     Task<HttpResponseMessage> GetRequestAsync(TokenResponse token, string requestUri);
+    Task<HttpResponseMessage> PostRequestAsync(TokenResponse token, string requestUri, HttpContent content);
 }

@@ -44,6 +44,20 @@ public class OIdcService
         return response;
     }
 
+    public async Task<HttpResponseMessage> PostRequestAsync(long userId, string requestUri, HttpContent content)
+    {
+        var token = _accessTokens.Find(userId);
+
+        if (token is null)
+        {
+            return null;
+        }
+
+        var response = await _authService.PostRequestAsync(token, requestUri, content);
+
+        return response;
+    }
+
     public string GetAuthUrl(long userId)
     {
         var state = Guid.NewGuid().ToString();

@@ -28,7 +28,7 @@ public class TokenStorage
     public void Put(long userId, TokenResponse token)
     {
         var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromSeconds(120))
+                .SetSlidingExpiration(TimeSpan.FromSeconds(token.ExpiresIn))
                 .RegisterPostEvictionCallback((key, value, reason, state) =>
                 {
                     var token = value as TokenResponse;

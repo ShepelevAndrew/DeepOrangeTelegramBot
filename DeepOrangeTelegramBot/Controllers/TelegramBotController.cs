@@ -18,11 +18,9 @@ namespace DeepOrangeTelegramBot.Controllers
         [HttpPost]
         public async void Post(Update update)
         {
-            if (update.Message == null)
-                return;
-
             await _updateDistributor.GetUpdateAsync(update);
         }
+
         [HttpGet]
         public string Get()
         {

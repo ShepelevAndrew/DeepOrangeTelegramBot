@@ -7,21 +7,14 @@ namespace DeepOrangeTelegramBot.Commands.Implementaion;
 
 public class StartCommand : ICommand
 {
-    public string Name => "/start";
+    public string Name => "/start /start@DeepOrange_bot";
 
-    private readonly TelegramBotClient _telegramBot;
-
-    public StartCommand(ITelegramBot telegramBot)
-    {
-        _telegramBot = telegramBot.Client;
-    }
-
-    public async Task Execute(Update update)
+    public async Task Execute(Update update, TelegramBotClient telegramBot)
     {
         if (update.Message is null)
             return;
 
         long chatId = update.Message.Chat.Id;
-        await _telegramBot.SendTextMessageAsync(chatId, "Привет!");
+        await telegramBot.SendTextMessageAsync(chatId, "Привет!");
     }
 }

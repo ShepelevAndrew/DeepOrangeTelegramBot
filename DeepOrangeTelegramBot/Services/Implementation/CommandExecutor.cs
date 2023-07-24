@@ -1,29 +1,33 @@
 ﻿using DeepOrangeTelegramBot.Bot.Interfaces;
 using DeepOrangeTelegramBot.Commands.Implementaion;
+using DeepOrangeTelegramBot.Commands.Implementaion.GetCommand;
+using DeepOrangeTelegramBot.Commands.Implementaion.GetEmployeeCommand;
 using DeepOrangeTelegramBot.Commands.Interfaces;
 using DeepOrangeTelegramBot.Services.Interfaces;
+using System.Text.RegularExpressions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace DeepOrangeTelegramBot.Services.Implementation;
 public class CommandExecutor : ITelegramUpdateListener
 {
-    private readonly List<ICommand> commands;
     private IListener? listener = null;
+    private readonly List<ICommand> commands;
+    private readonly TelegramBotClient _client;
 
-    private readonly OIdcService _oIdcService;
-
-    public CommandExecutor(ITelegramBot client, OIdcService oIdcService)
+    public CommandExecutor(ITelegramBot telegramBot, OIdcService oIdcService)
     {
-        _oIdcService = oIdcService;
+        _client = telegramBot.Client;
         
         commands = new List<ICommand>()
         {
-            new StartCommand(client),
+            new StartCommand(),
             new RegisterCommand(this),
-            new CreateInviteLinkCommand(client),
-            new SendAuthLinkCommand(client, _oIdcService),
-            new GetEmployeeCommand(client, _oIdcService)
+            new CreateInviteLinkCommand(),
+            new SendAuthLinkCommand(oIdcService),
+            new GetCommand(oIdcService),
+            new CreateCommand(oIdcService, this),
+            new CallbackEmployeeCommand(oIdcService)
         };
     }
 
@@ -35,20 +39,32 @@ public class CommandExecutor : ITelegramUpdateListener
         }
         else
         {
-            await listener.GetUpdate(update);
+            await listener.GetUpdate(update, _client);
         }
     }
 
     private async Task ExecuteCommand(Update update)
     {
-        if (update.Message is not null)
+        string commandName = "";
+        if (update.Message is not null && update.Message.Text is not null)
         {
-            Message msg = update.Message;
-            foreach (var command in commands)
-            {
-                if (command.Name == msg.Text)
+            commandName = update.Message.Text;
+        }
+        else if(update.CallbackQuery is not null && update.CallbackQuery.Data is not null)
+        {
+            commandName = update.CallbackQuery.Data;
+        }
+
+        string pattern = @"-u\S*";
+        commandName = Regex.Replace(commandName, pattern, "-u");
+
+        foreach (var command in commands)
+        {
+            var queries = GetQueriesFromCommandName(command.Name);
+            foreach (var query in queries) {
+                if (query == commandName)
                 {
-                    await command.Execute(update);
+                    await command.Execute(update, _client);
                     break;
                 }
             }
@@ -93,5 +109,52 @@ public class CommandExecutor : ITelegramUpdateListener
             }
         }
         return commands;
+    }
+
+    private static List<string> GetQueriesFromCommandName(string commandName)
+    {
+        string[] words = commandName.Split(' ');
+
+        string query = "";
+        var queries = new List<string>();
+
+        string commandSymb = "-с", parametrSymb = "-p", unknownParametrSymb = "-u";
+
+        foreach (string word in words)
+        {
+            if (word.StartsWith(commandSymb) || word.StartsWith('/'))
+            {
+                var command = word.Replace(commandSymb, "");
+
+                query = "";
+                query += command;
+
+                queries.Add(command);
+            }
+            else if (word.StartsWith(parametrSymb))
+            {
+                string command = query;
+                queries.Remove(command);
+
+                var parametr = word.Replace(parametrSymb, "");
+
+                query += " " + parametr;
+                queries.Add(query);
+
+                query = command;
+            }
+            else if (word.StartsWith(unknownParametrSymb))
+            {
+                string command = query;
+                queries.Remove(command);
+
+                query += " " + unknownParametrSymb;
+                queries.Add(query);
+
+                query = command;
+            }
+        }
+
+        return queries;
     }
 }
